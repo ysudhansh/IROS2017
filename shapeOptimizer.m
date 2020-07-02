@@ -1,8 +1,8 @@
 function wireframe_collection = shapeOptimizer(seq, frm, id)
 
 numViews = 1;
-numPts = 14;
-numObs = 14;
+numPts = 36;
+numObs = 36;
 K = [721.53,0,609.55;0,721.53,172.85;0,0,1];
 avgCarLength = 3.8600;
 avgCarWidth = 1.6362;
@@ -25,8 +25,11 @@ for i=1:size(frm,2)
     fprintf(fileID, "%f %f\n", keypoints_collection(2*i-1:2*i,:));
     fprintf(fileID, "%f\n", observation_wts(:,i));  
     fprintf(fileID, "%f %f %f\n", wireframe(3*i-2:3*i,:));
-    for j=1:5
-       fprintf(fileID, "%f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f\n", def_vectors(5*(i-1) + j, :)); 
+    for j=1:42
+        for k=1:3:108
+            fprintf(fileID, "%f %f %f ", def_vectors(42*(i-1) + j, k : k+2)); 
+        end
+        fprintf(fileID, "\n");
     end
     fprintf(fileID, "%f %f %f %f %f\n", lambda);
     fprintf(fileID, "%f\n", rotation_collection(:,i));
