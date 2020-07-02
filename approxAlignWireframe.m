@@ -18,7 +18,7 @@ for i=1:size(phi,1)
     wireframe_collection = [wireframe_collection; new_wireframe_translated];
     new_def_vectors = zeros(size(old_def_vectors));
     for j = 1:size(old_def_vectors,1)
-        in = reshape(old_def_vectors(j,:),3,14);
+        in = reshape(old_def_vectors(j,:),3,36);
         out = R_y * in;
         new_def_vectors(j,:) = reshape(out,size(old_def_vectors(j,:)));
     end
