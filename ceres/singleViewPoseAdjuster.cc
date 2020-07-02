@@ -117,7 +117,7 @@ int main(int argc, char** argv){
 		// Create a vector of eigenvalues for the current keypoint
 		double *curEigVec = new double[15];
 		// std::cout << "curEigVec: ";
-		for(int j = 0; j < 5; ++j){
+		for(int j = 0; j < 42; ++j){
 			curEigVec[3*j+0] = V[3*numObs*j + 3*i + 0];
 			curEigVec[3*j+1] = V[3*numObs*j + 3*i + 1];
 			curEigVec[3*j+2] = V[3*numObs*j + 3*i + 2];

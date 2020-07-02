@@ -83,10 +83,10 @@ public:
 			}
 		}
 
-		// Read in the top 5 eigenvectors for the shape
-		// Size allocation: 5 vecs * 3 coordinates per vex * 14 keypoints (numPts_)
-		V_ = new double[5*3*numPts_];
-		for(int i = 0; i < 5; ++i){
+		// Read in the top 42 eigenvectors for the shape
+		// Size allocation: 42 vecs * 3 coordinates per vex * 36 keypoints (numPts_)
+		V_ = new double[42*3*numPts_];
+		for(int i = 0; i < 42; ++i){
 			for(int j = 0; j < numPts_; ++j){
 				fscanfOrDie(fptr, "%lf", V_ + i*3*numPts_ + 3*j + 0);
 				fscanfOrDie(fptr, "%lf", V_ + i*3*numPts_ + 3*j + 1);
@@ -253,10 +253,10 @@ public:
 			}
 		}
 
-		// Read in the top 5 eigenvectors for the shape
-		// Size allocation: 5 vecs * 3 coordinates per vex * 14 keypoints (numPts_)
-		V_ = new double[5*3*numPts_];
-		for(int i = 0; i < 5; ++i){
+		// Read in the top 42 eigenvectors for the shape
+		// Size allocation: 42 vecs * 3 coordinates per vex * 36 keypoints (numPts_)
+		V_ = new double[42*3*numPts_];
+		for(int i = 0; i < 42; ++i){
 			for(int j = 0; j < numPts_; ++j){
 				fscanfOrDie(fptr, "%lf", V_ + i*3*numPts_ + 3*j + 0);
 				fscanfOrDie(fptr, "%lf", V_ + i*3*numPts_ + 3*j + 1);
