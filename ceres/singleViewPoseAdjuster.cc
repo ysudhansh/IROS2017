@@ -115,7 +115,7 @@ int main(int argc, char** argv){
 	// For each observation, add a standard PnP error (reprojection error) residual block
 	for(int i = 0; i < numObs; ++i){
 		// Create a vector of eigenvalues for the current keypoint
-		double *curEigVec = new double[15];
+		double *curEigVec = new double[126];
 		// std::cout << "curEigVec: ";
 		for(int j = 0; j < 42; ++j){
 			curEigVec[3*j+0] = V[3*numObs*j + 3*i + 0];
