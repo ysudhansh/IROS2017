@@ -1,0 +1,4 @@
+/home/ys/rrc/PoseShapeOptimization/ceres/CMakeFiles/edit_cache.dir
+/home/ys/rrc/PoseShapeOptimization/ceres/CMakeFiles/rebuild_cache.dir
+/home/ys/rrc/PoseShapeOptimization/ceres/CMakeFiles/singleViewPoseAdjuster.dir
+/home/ys/rrc/PoseShapeOptimization/ceres/CMakeFiles/singleViewShapeAdjuster.dir
