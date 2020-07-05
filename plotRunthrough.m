@@ -13,12 +13,12 @@ reprojection_errors = [];
 viewpoint_errors = [];
 rmse = [];
 
-for i=1:size(data,1)
+for i=1:size(seq,1)
 %     keypoints = reshape(data(i,:), [3 14]);
 %     keypoints(1,:) = keypoints(1,:) * abs(tracklets_data(i,4) - tracklets_data(i,6))/64;
 %     keypoints(2,:) = keypoints(2,:) * abs(tracklets_data(i,5) - tracklets_data(i,7))/64;
 %     keypoints(1:2,:) = keypoints(1:2,:) + [tracklets_data(i,4); tracklets_data(i,5)];
-    keypoints = data(i,:);
+    keypoints = data(2*i-1:2*i,:);
     
     approx_aligned_wf = approx_aligned_wireframe_collection(3*i-2:3*i,:);
     approx_proj_wf = K * approx_aligned_wf;
