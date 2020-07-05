@@ -1,6 +1,6 @@
 function [tracklets_op, ground_truth] = tracklets_helper(seq, frm, id)
 
-label_dir = "~/rrc/PoseShapeOptimization/training/label_02";
+label_dir = "~/rrc/IROS2017/training/label_02";
 tracklets_op = [];
 ground_truth = [];
 for i=1:size(seq,2)
@@ -25,6 +25,6 @@ for i=1:size(seq,2)
     
 end
 
-cd ~/rrc/PoseShapeOptimization/;
+cd ~/rrc/IROS2017/;
 
 end

@@ -38,11 +38,11 @@ for i=1:size(data,1)
     shape_opt_wf = shape_optimized_wireframe_collection(3*i-2:3*i,:);
     shape_opt_proj_wf = K * shape_opt_wf;
     shape_opt_wf_img = [shape_opt_proj_wf(1,:) ./ shape_opt_proj_wf(3,:); shape_opt_proj_wf(2,:) ./ shape_opt_proj_wf(3,:)];
-    length_vec = (shape_opt_wf(:,18) + shape_opt_wf(:,36))/2 - (shape_opt_wf(:,11) + shape_opt_wf(:,29))/2;
+    length_vec = (shape_opt_wf(:,1) + shape_opt_wf(:,2))/2 - (shape_opt_wf(:,3) + shape_opt_wf(:,4))/2;
     shape_azimuth = rad2deg(acos(dot(length_vec, [0;0;1]) / norm(length_vec)));
     shape_rmse = sqrt(mean((mean(shape_opt_wf') - carCenters(i,:)) .^ 2));
 
-    errors = [sum(sum(abs(approx_wf_img - keypoints))); sum(sum(abs(pose_opt_wf_img - keypoints))); sum(sum(abs(shape_opt_wf_img - keypoints)))];
+    errors = [sum(sum(abs(approx_wf_img - keypoints(1:2,:)))); sum(sum(abs(pose_opt_wf_img - keypoints(1:2,:)))); sum(sum(abs(shape_opt_wf_img - keypoints(1:2,:))))];
     reprojection_errors = [reprojection_errors, errors];
     
     if tracklets_data(i,8) + pi/2 >= 0 && tracklets_data(i,8) + pi/2 <= pi

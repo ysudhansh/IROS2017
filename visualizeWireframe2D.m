@@ -21,8 +21,43 @@ hold on;
 scatter(wireframe(1,:), wireframe(2,:), repmat(20, 1, numKps), colors, 'filled');
 % scatter3(wireframe(1,:), wireframe(2,:), wireframe(3,:), 'filled', 'MarkerFaceColor', colors);
 
-% Get car part names
-%load(fullfile(localDataDir, 'partNames', 'car'));
+% Car parts (keypoints) are indexed in the following manner
+% 1  ->  'L_B_WheelCenter'
+% 2  ->  'L_F_WheelCenter'
+% 3  ->  'L_F_WheelPt1'
+% 4  ->  'L_F_WheelPt2'
+% 5  ->  'L_F_WheelPt3'
+% 6  ->  'L_F_WheelPt4'
+% 7  ->  'L_B_WheelPt1'
+% 8  ->  'L_B_WheelPt2'
+% 9  ->  'L_B_WheelPt3'
+% 10 ->  'L_B_WheelPt4'
+% 11 ->  'L_B_Bumper'
+% 12 ->  'L_TailLight'
+% 13 ->  'L_BackGlass'
+% 14 ->  'L_B_RoofTop'
+% 15  ->  'L_F_RoofTop'
+% 16  ->  'L_SideViewMirror'
+% 17  ->  'L_HeadLight'
+% 18  ->  'L_F_Bumper'
+% 19  ->  'R_B_WheelCenter'
+% 20  ->  'R_F_WheelCenter'
+% 21  ->  'R_F_WheelPt1'
+% 22  ->  'R_F_WheelPt2'
+% 23  ->  'R_F_WheelPt3'
+% 24  ->  'R_F_WheelPt4'
+% 25  ->  'R_B_WheelPt1'
+% 26  ->  'R_B_WheelPt2'
+% 27  ->  'R_B_WheelPt3'
+% 28 ->  'R_B_WheelPt4'
+% 29 ->  'R_B_Bumper'
+% 30 ->  'R_TailLight'
+% 31 ->  'R_BackGlass'
+% 32 ->  'R_B_RoofTop'
+% 33  ->  'R_F_RoofTop'
+% 34  ->  'R_SideViewMirror'
+% 35  ->  'R_HeadLight'
+% 36  ->  'R_F_Bumper'
 
 % Plot text labels for car keypoints, using distinguishable colors
 % text(wireframe(1,1), wireframe(2,1), 'L\_F\_WheelCenter', 'color', colors(1,:), 'FontSize', 10, 'BackgroundColor', [0, 0, 0]);
@@ -40,54 +75,21 @@ scatter(wireframe(1,:), wireframe(2,:), repmat(20, 1, numKps), colors, 'filled')
 % text(wireframe(1,13), wireframe(2,13), 'L\_B\_RoofTop', 'color', colors(13,:), 'FontSize', 10, 'BackgroundColor', [0, 0, 0]);
 % text(wireframe(1,14), wireframe(2,14), 'R\_B\_RoofTop', 'color', colors(14,:), 'FontSize', 10, 'BackgroundColor', [0, 0, 0]);
 
-% Car parts (keypoints) are indexed in the following manner
-% 1  ->  'L_F_WheelCenter'
-% 2  ->  'R_F_WheelCenter'
-% 3  ->  'L_B_WheelCenter'
-% 4  ->  'R_B_WheelCenter'
-% 5  ->  'L_HeadLight'
-% 6  ->  'R_HeadLight'
-% 7  ->  'L_TailLight'
-% 8  ->  'R_TailLight'
-% 9  ->  'L_SideViewMirror'
-% 10 ->  'R_SideViewMirror'
-% 11 ->  'L_F_RoofTop'
-% 12 ->  'R_F_RoofTop'
-% 13 ->  'L_B_RoofTop'
-% 14 ->  'R_B_RoofTop'
 
-% L_F_RoofTop -> R_F_RoofTop -> R_B_RoofTop -> L_B_RoofTop
-edges = [11, 12; 12, 14; 14, 13; 13, 11;];
-% L_HeadLight -> R_HeadLight -> R_TailLight -> L_TailLight
-edges = [edges; 5, 6; 6, 8; 8, 7; 7, 5];
-% L_Headlight -> L_F_RoofTop
-edges = [edges; 5, 11];
-% R_HeadLight -> R_F_RoofTop
-edges = [edges; 6, 12];
-% L_TailLight -> L_B_RoofTop
-edges = [edges; 7, 13];
-% R_TailLight -> R_B_RoofTop
-edges = [edges; 8, 14];
-% L_F_WheelCenter -> R_F_WheelCenter -> R_B_WheelCenter -> L_B_WheelCenter
-edges = [edges; 1, 2; 2, 4; 4, 3; 3, 1];
-% L_HeadLight -> L_F_WheelCenter
-edges = [edges; 5, 1];
-% R_HeadLight -> R_F_WheelCenter
-edges = [edges; 6, 2];
-% L_TailLight -> L_B_WheelCenter
-edges = [edges; 7, 3];
-% R_TailLight -> R_B_WheelCenter
-edges = [edges; 8, 4];
-% L_SideViewMirror -> L_HeadLight
-edges = [edges; 9, 5];
-% R_SideViewMirror -> R_HeadLight
-edges = [edges; 10, 6];
-% % L_SideViewMirror -> R_SideViewMirror
-% edges = [edges; 9, 10];
-% % L_SideViewMirror -> L_F_RoofTop
-% edges = [edges; 9, 11];
-% % R_SideViewMirror -> R_F_RoofTop
-% edges = [edges; 10, 12];
+ % Car Base
+ edges = [11,10; 10,9; 9,8; 8,7; 7,6; 6,5; 5,4; 4,3; 3,18; 18,36; 36,21; 21,22; 22,23; 23,24; 24,25; 25,26; 26,27; 27,28; 28,29; 29,11];
+ % Roof
+ edges = [edges; 15,14; 14,32; 32,33; 33,15];
+ % Windows and Windshields
+ edges = [edges; 13,31; 34,16];
+ % Connections between roof and windows level
+ edges = [edges; 16,15; 13,14; 31,32; 34,33];
+ % Connections between windows level and hood level
+ edges = [edges; 13,12; 31,30; 34,35; 16,17];
+ % Hood level
+ edges = [edges; 12,30; 35,17];
+ % Connections between hood level to car base
+ edges = [edges; 12,11; 30,29; 17,18; 35,36];
 
 % Generate distinguishable colors (equal to the number of edges). The
 % second parameter to the function is the background color.
