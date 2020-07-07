@@ -95,8 +95,8 @@ public:
 		}
 
 		// Read in the initial values for lambdas
-		lambdas_ = new double[5];
-		for(int i = 0; i < 5; ++i){
+		lambdas_ = new double[42];
+		for(int i = 0; i < 42; ++i){
 			fscanfOrDie(fptr, "%lf", lambdas_ + i);
 		}
 
@@ -265,8 +265,8 @@ public:
 		}
 
 		// Read in the initial values for lambdas
-		lambdas_ = new double[5];
-		for(int i = 0; i < 5; ++i){
+		lambdas_ = new double[42];
+		for(int i = 0; i < 42; ++i){
 			fscanfOrDie(fptr, "%lf", lambdas_ + i);
 		}
 

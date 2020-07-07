@@ -13,7 +13,7 @@ reprojection_errors = [];
 viewpoint_errors = [];
 rmse = [];
 
-for i=1:size(seq,1)
+for i=1:size(seq,2)
 %     keypoints = reshape(data(i,:), [3 14]);
 %     keypoints(1,:) = keypoints(1,:) * abs(tracklets_data(i,4) - tracklets_data(i,6))/64;
 %     keypoints(2,:) = keypoints(2,:) * abs(tracklets_data(i,5) - tracklets_data(i,7))/64;
