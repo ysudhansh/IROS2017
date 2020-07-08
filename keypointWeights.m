@@ -17,9 +17,9 @@ end
 
 w = 0.7 * wkps + 0.3 * wkpl;
 min = 0.1;
-[r,c] = find(w < 0.05 * min);
+[r,c] = find(w < min);
 for i=1:length(r)
-    w(r(i), c(i)) = 0.05 * min;
+    w(r(i), c(i)) = min;
 end
 
 end

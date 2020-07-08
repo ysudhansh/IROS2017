@@ -1,11 +1,11 @@
 function w = keypointWeightsShape(seq, frm, id)
 
-[w, wkps, wkpl] = keypointWeights(seq, frm, id);
-w = 0.2 * wkps + 0.8 * wkpl;
+[~, wkps, wkpl] = keypointWeights(seq, frm, id);
+w = 0.8 * wkps + 0.2 * wkpl;
 min = 0.1;
-[r,c] = find(w < 0.05 * min);
+[r,c] = find(w < min);
 for i=1:length(r)
-    w(r(i), c(i)) = 0.05 * min;
+    w(r(i), c(i)) = min;
 end
 
 end

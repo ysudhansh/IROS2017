@@ -96,11 +96,15 @@ scatter(wireframe(1,:), wireframe(2,:), repmat(20, 1, numKps), colors, 'filled')
 colors = distinguishable_colors(size(edges,1), [1, 1, 1]);
 
 % Draw each edge in the plot
+% for i = 1:size(edges, 1)
+%     plot(wireframe(1,[edges(i,1), edges(i,2)]), wireframe(2, [edges(i,1), edges(i,2)]), ...
+%         'LineWidth', 2, 'Color', colors(i,:));
+% end
+
 for i = 1:size(edges, 1)
     plot(wireframe(1,[edges(i,1), edges(i,2)]), wireframe(2, [edges(i,1), edges(i,2)]), ...
-        'LineWidth', 2, 'Color', colors(i,:));
+        'LineWidth', 2, 'Color', [0,0,1]);
 end
-
 
 % % L_F_RoofTop -> R_F_RoofTop -> R_B_RoofTop -> L_B_RoofTop
 % plot3(wireframe(1,[11,12]), wireframe(2,[11,12]), wireframe(3,[11,12]), 'LineWidth', 2, 'Color', colors(1,:));
