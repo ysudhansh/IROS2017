@@ -111,6 +111,19 @@ depend:
 .PHONY : depend
 
 #=============================================================================
+# Target rules for targets named multiViewAdjuster
+
+# Build rule for target.
+multiViewAdjuster: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 multiViewAdjuster
+.PHONY : multiViewAdjuster
+
+# fast build rule for target.
+multiViewAdjuster/fast:
+	$(MAKE) -f CMakeFiles/multiViewAdjuster.dir/build.make CMakeFiles/multiViewAdjuster.dir/build
+.PHONY : multiViewAdjuster/fast
+
+#=============================================================================
 # Target rules for targets named singleViewPoseAdjuster
 
 # Build rule for target.
@@ -135,6 +148,33 @@ singleViewShapeAdjuster: cmake_check_build_system
 singleViewShapeAdjuster/fast:
 	$(MAKE) -f CMakeFiles/singleViewShapeAdjuster.dir/build.make CMakeFiles/singleViewShapeAdjuster.dir/build
 .PHONY : singleViewShapeAdjuster/fast
+
+multiViewAdjuster.o: multiViewAdjuster.cc.o
+
+.PHONY : multiViewAdjuster.o
+
+# target to build an object file
+multiViewAdjuster.cc.o:
+	$(MAKE) -f CMakeFiles/multiViewAdjuster.dir/build.make CMakeFiles/multiViewAdjuster.dir/multiViewAdjuster.cc.o
+.PHONY : multiViewAdjuster.cc.o
+
+multiViewAdjuster.i: multiViewAdjuster.cc.i
+
+.PHONY : multiViewAdjuster.i
+
+# target to preprocess a source file
+multiViewAdjuster.cc.i:
+	$(MAKE) -f CMakeFiles/multiViewAdjuster.dir/build.make CMakeFiles/multiViewAdjuster.dir/multiViewAdjuster.cc.i
+.PHONY : multiViewAdjuster.cc.i
+
+multiViewAdjuster.s: multiViewAdjuster.cc.s
+
+.PHONY : multiViewAdjuster.s
+
+# target to generate assembly for a file
+multiViewAdjuster.cc.s:
+	$(MAKE) -f CMakeFiles/multiViewAdjuster.dir/build.make CMakeFiles/multiViewAdjuster.dir/multiViewAdjuster.cc.s
+.PHONY : multiViewAdjuster.cc.s
 
 singleViewPoseAdjuster.o: singleViewPoseAdjuster.cc.o
 
@@ -197,9 +237,13 @@ help:
 	@echo "... clean"
 	@echo "... depend"
 	@echo "... edit_cache"
+	@echo "... multiViewAdjuster"
 	@echo "... rebuild_cache"
 	@echo "... singleViewPoseAdjuster"
 	@echo "... singleViewShapeAdjuster"
+	@echo "... multiViewAdjuster.o"
+	@echo "... multiViewAdjuster.i"
+	@echo "... multiViewAdjuster.s"
 	@echo "... singleViewPoseAdjuster.o"
 	@echo "... singleViewPoseAdjuster.i"
 	@echo "... singleViewPoseAdjuster.s"

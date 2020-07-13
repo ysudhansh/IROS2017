@@ -1,4 +1,5 @@
 /home/ys/rrc/IROS2017/ceres/CMakeFiles/edit_cache.dir
+/home/ys/rrc/IROS2017/ceres/CMakeFiles/multiViewAdjuster.dir
 /home/ys/rrc/IROS2017/ceres/CMakeFiles/rebuild_cache.dir
 /home/ys/rrc/IROS2017/ceres/CMakeFiles/singleViewPoseAdjuster.dir
 /home/ys/rrc/IROS2017/ceres/CMakeFiles/singleViewShapeAdjuster.dir

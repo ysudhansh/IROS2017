@@ -28,3 +28,6 @@ target_link_libraries(singleViewPoseAdjuster ${CERES_LIBRARIES})
 
 add_executable(singleViewShapeAdjuster singleViewShapeAdjuster.cc)
 target_link_libraries(singleViewShapeAdjuster ${CERES_LIBRARIES})
+
+add_executable(multiViewAdjuster multiViewAdjuster.cc)
+target_link_libraries(multiViewAdjuster ${CERES_LIBRARIES})

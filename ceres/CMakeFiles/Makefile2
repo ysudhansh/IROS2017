@@ -60,13 +60,50 @@ CMAKE_SOURCE_DIR = /home/ys/rrc/IROS2017/ceres
 CMAKE_BINARY_DIR = /home/ys/rrc/IROS2017/ceres
 
 #=============================================================================
+# Target rules for target CMakeFiles/multiViewAdjuster.dir
+
+# All Build rule for target.
+CMakeFiles/multiViewAdjuster.dir/all:
+	$(MAKE) -f CMakeFiles/multiViewAdjuster.dir/build.make CMakeFiles/multiViewAdjuster.dir/depend
+	$(MAKE) -f CMakeFiles/multiViewAdjuster.dir/build.make CMakeFiles/multiViewAdjuster.dir/build
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/ys/rrc/IROS2017/ceres/CMakeFiles --progress-num=1,2 "Built target multiViewAdjuster"
+.PHONY : CMakeFiles/multiViewAdjuster.dir/all
+
+# Include target in all.
+all: CMakeFiles/multiViewAdjuster.dir/all
+
+.PHONY : all
+
+# Build rule for subdir invocation for target.
+CMakeFiles/multiViewAdjuster.dir/rule: cmake_check_build_system
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/ys/rrc/IROS2017/ceres/CMakeFiles 2
+	$(MAKE) -f CMakeFiles/Makefile2 CMakeFiles/multiViewAdjuster.dir/all
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/ys/rrc/IROS2017/ceres/CMakeFiles 0
+.PHONY : CMakeFiles/multiViewAdjuster.dir/rule
+
+# Convenience name for target.
+multiViewAdjuster: CMakeFiles/multiViewAdjuster.dir/rule
+
+.PHONY : multiViewAdjuster
+
+# clean rule for target.
+CMakeFiles/multiViewAdjuster.dir/clean:
+	$(MAKE) -f CMakeFiles/multiViewAdjuster.dir/build.make CMakeFiles/multiViewAdjuster.dir/clean
+.PHONY : CMakeFiles/multiViewAdjuster.dir/clean
+
+# clean rule for target.
+clean: CMakeFiles/multiViewAdjuster.dir/clean
+
+.PHONY : clean
+
+#=============================================================================
 # Target rules for target CMakeFiles/singleViewPoseAdjuster.dir
 
 # All Build rule for target.
 CMakeFiles/singleViewPoseAdjuster.dir/all:
 	$(MAKE) -f CMakeFiles/singleViewPoseAdjuster.dir/build.make CMakeFiles/singleViewPoseAdjuster.dir/depend
 	$(MAKE) -f CMakeFiles/singleViewPoseAdjuster.dir/build.make CMakeFiles/singleViewPoseAdjuster.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/ys/rrc/IROS2017/ceres/CMakeFiles --progress-num=1,2 "Built target singleViewPoseAdjuster"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/ys/rrc/IROS2017/ceres/CMakeFiles --progress-num=3,4 "Built target singleViewPoseAdjuster"
 .PHONY : CMakeFiles/singleViewPoseAdjuster.dir/all
 
 # Include target in all.
@@ -103,7 +140,7 @@ clean: CMakeFiles/singleViewPoseAdjuster.dir/clean
 CMakeFiles/singleViewShapeAdjuster.dir/all:
 	$(MAKE) -f CMakeFiles/singleViewShapeAdjuster.dir/build.make CMakeFiles/singleViewShapeAdjuster.dir/depend
 	$(MAKE) -f CMakeFiles/singleViewShapeAdjuster.dir/build.make CMakeFiles/singleViewShapeAdjuster.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/ys/rrc/IROS2017/ceres/CMakeFiles --progress-num=3,4 "Built target singleViewShapeAdjuster"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/ys/rrc/IROS2017/ceres/CMakeFiles --progress-num=5,6 "Built target singleViewShapeAdjuster"
 .PHONY : CMakeFiles/singleViewShapeAdjuster.dir/all
 
 # Include target in all.
