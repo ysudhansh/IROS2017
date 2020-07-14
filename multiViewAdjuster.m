@@ -1,6 +1,6 @@
-function multiViewAdjuster(seqID, start_frm, end_frm, carID)
+function multi_opt_wireframe = multiViewAdjuster(seqID, start_frm, end_frm, carID)
 
-numFrames = end_frm - start_frame + 1;
+numFrames = end_frm - start_frm + 1;
 seq = seqID .* ones(1, numFrames);
 frm = start_frm:1:end_frm;
 id = carID .* ones(1, numFrames);
@@ -14,6 +14,9 @@ avgCarHeight = 1.5208;
 B = mobili(seq, frm, id);
 carCenters = B(:,4:6);
 numViews = size(B,1);
+seq = B(:,1)';
+frm = B(:,2)';
+id = B(:,3)';
 [wireframe, ~] = approxAlignWireframe(seq, frm, id);
 [~, def_vectors, rotation_collection, translation_collection, lambdas_collection] = shapeOptimizer(seq, frm, id);
 observation_wts = keypointWeightsShape(seq, frm, id);
