@@ -1,0 +1,49 @@
+function multiViewAdjuster(seqID, start_frm, end_frm, carID)
+
+numFrames = end_frm - start_frame + 1;
+seq = seqID .* ones(1, numFrames);
+frm = start_frm:1:end_frm;
+id = carID .* ones(1, numFrames);
+numObs = 36;
+numPts = 36;
+numVecs = 42;
+K = [721.53,0,609.55;0,721.53,172.85;0,0,1];
+avgCarLength = 3.8600;
+avgCarWidth = 1.6362;
+avgCarHeight = 1.5208;
+B = mobili(seq, frm, id);
+carCenters = B(:,4:6);
+numViews = size(B,1);
+[wireframe, ~] = approxAlignWireframe(seq, frm, id);
+[~, def_vectors, rotation_collection, translation_collection, lambdas_collection] = shapeOptimizer(seq, frm, id);
+observation_wts = keypointWeightsShape(seq, frm, id);
+[~, keypoints_collection] = keypointLocalizations(seq, frm, id);
+
+fileID = fopen("ceres/multiViewAdjuster.txt","w");
+fprintf(fileID, "%d %d %d %d\n", [numViews, numPts, numObs, numVecs]);
+fprintf(fileID, "%f %f %f\n", [avgCarHeight, avgCarWidth, avgCarLength]);
+fprintf(fileID, "%f %f %f %f %f %f %f %f %f\n", reshape(K',[1 9]));
+for i=1:numViews
+    fprintf(fileID, "%f %f %f\n", [carCenters(i,1), carCenters(i,2), carCenters(i,3)]);
+end
+for i=1:numViews
+    fprintf(fileID, "%f %f\n", keypoints_collection(2*i-1:2*i,:));
+end
+for i=1:numViews
+    fprintf(fileID, "%f\n", observation_wts(:,i));
+end
+for i=1:numViews
+    fprintf(fileID, "%f %f %f\n", wireframe(3*i-2:3*i,:));
+end
+for i=1:numViews
+    for j=1:42
+        for k=1:3:108
+            fprintf(fileID, "%f %f %f ", def_vectors(42*(i-1) + j, k : k+2)); 
+        end
+        fprintf(fileID, "\n");
+    end
+end
+for i=1:numViews
+    fprintf(fileID, "%f ", lambdas_collection
+
+end

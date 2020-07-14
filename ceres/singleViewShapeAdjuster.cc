@@ -245,6 +245,34 @@ int main(int argc, char** argv){
 		// // Print the output to stdout
 		// std::cout << temp[0] << " " << temp[1] << " " << temp[2] << std::endl;
 	}
+
+
+	//**************** Temporary code : Gokul B. Nair **********
+	// to analyse change in lambdas after adjustments
+	std::ofstream f;
+	int numVec = 42;
+	f.open("lvals.txt");  //std::ofstream::app);
+	for(int g=0;g<numVec;g++){
+		f<<lambdas[g];
+		if(g!=(numVec - 1)) f<<" ";
+	}
+	f<<'\n';
+	f.close();
+
+	// Write vectors
+	f.open("vvals.txt");  //std::ofstream::app);
+	for(int g=0;g<numVec;g++){
+		for(int hg=0;hg<numPts;hg++) {
+			f<<V[108*g + 3*hg]<<" "<<V[108*g + 3*hg + 1]<<" "<<V[108*g + 3*hg + 2];
+			if(hg!=(numPts-1)) f<<" ";
+		}
+		if(g!=(numVec-1)) f<<std::endl;
+	}
+	f<<'\n';
+	f.close();
+
+	//*************** End of Temporary code for lambdas ********
+
 	// outFile << lambdas[0] << " " << lambdas[1] << " " << lambdas[2] << " " << lambdas[3] << " " << lambdas[4] << std::endl;
 	// std::cout << "rot: " << rotAngleAxis[0] << " " << rotAngleAxis[1] << " " << rotAngleAxis[2] << std::endl;
 	// std::cout << "trans: " << trans[0] << " " << trans[1] << " " << trans[2] << std::endl;

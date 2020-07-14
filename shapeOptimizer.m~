@@ -1,4 +1,4 @@
-function [wireframe_collection, defv_collection, rotation_collection, translation_collection, lambdas_collection] = shapeOptimizer(seq, frm, id)
+function [wireframe_collection, defv_collection, lambda = shapeOptimizer(seq, frm, id)
 
 numViews = 1;
 numPts = 36;
@@ -44,10 +44,6 @@ for i=1:size(frm,2)
     system(commands);
     new_wireframe = importdata("ceres/ceres_output_singleViewShapeAdjuster.txt")';
     wireframe_collection = [wireframe_collection; new_wireframe];
-    l = importdata("ceres/lvals.txt");
-    lambdas_collection = [lambdas_collection; l];
-    dv = importdata("ceres/vvals.txt");
-    defv_collection = [defv_collection; dv];
 end
 
 end
