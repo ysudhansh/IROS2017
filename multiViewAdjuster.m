@@ -69,7 +69,7 @@ for i=1:length(frm)
     visualizeWireframe2D(image, wf_img);
     saveas(img, sprintf("multiViewResult/%d_%d.png", seq(i), frm(i)));
     close(img);
-    pause(0.2);
+    pause(1);
 end
 
 end
