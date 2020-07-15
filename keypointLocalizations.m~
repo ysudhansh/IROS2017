@@ -1,4 +1,4 @@
-function [wkps, keypoints_collection, new_seq_frm_id] = keypointLocalizations(seq, frm, id)
+function [wkps, keypoints_collection] = keypointLocalizations(seq, frm, id)
 
 info = importdata("infofile.txt");
 indices = [];

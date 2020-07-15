@@ -1,4 +1,4 @@
-function multiViewAdjuster(seqID, start_frm, end_frm, carID)
+function multi_opt_wireframe = multiViewAdjuster(seqID, start_frm, end_frm, carID)
 
 numFrames = end_frm - start_frm + 1;
 seq = seqID .* ones(1, numFrames);
@@ -67,9 +67,7 @@ for i=1:length(frm)
     wf_img = proj_wf(1:2,:) ./ proj_wf(3,:);
     img = figure;
     visualizeWireframe2D(image, wf_img);
-    saveas(img, sprintf("multiViewResult/%d_%d.png", seq(i), frm(i)));
-    close(img);
-    pause(0.2);
+    saveas(img, sprintf("%d_%d.png",
 end
 
 end
