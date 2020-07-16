@@ -47,10 +47,13 @@ for i=1:numViews
         fprintf(fileID, "\n");
     end
 end
-for i=1:numViews
-    fprintf(fileID, "%f ", lambdas_collection(i,:));
-    fprintf(fileID, "\n");
-end
+% for i=1:numViews
+%     fprintf(fileID, "%f ", lambdas_collection(i,:));
+%     fprintf(fileID, "\n");
+% end
+lambdas = mean(lambdas_collection);
+fprintf(fileID, "%f ", lambdas);
+fprintf(fileID, "\n");
 for i=1:numViews
     fprintf(fileID, "%f\n", rotation_collection(:,i));
 end
@@ -67,7 +70,7 @@ for i=1:length(frm)
     wf_img = proj_wf(1:2,:) ./ proj_wf(3,:);
     img = figure;
     visualizeWireframe2D(image, wf_img);
-    saveas(img, sprintf("multiViewResult/%d_%d.png", seq(i), frm(i)));
+    saveas(img, sprintf("multiViewResult/%d_%d_%d.png", seq(i), frm(i), id(i)));
     close(img);
     pause(1);
 end
