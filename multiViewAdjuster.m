@@ -75,4 +75,7 @@ for i=1:length(frm)
     pause(1);
 end
 
+system("ffmpeg -framerate 5 -start_number 35 -i 'multiViewResult/3_%d_1.png' -c:v libx264 -r 30  -vf 'pad=ceil(iw/2)*2:ceil(ih/2)*2' -pix_fmt yuv420p car1.mp4");
+system("ffmpeg -framerate 5 -start_number 10 -i 'multiViewResult/3_%d_0.png' -c:v libx264 -r 30  -vf 'pad=ceil(iw/2)*2:ceil(ih/2)*2' -pix_fmt yuv420p car0.mp4");
+
 end
