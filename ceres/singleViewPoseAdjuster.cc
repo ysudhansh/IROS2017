@@ -129,7 +129,7 @@ int main(int argc, char** argv){
 			new PnPError(X_bar_initial+3*i, observations+2*i, curEigVec, K, observationWeights[i], lambdas));
 		// Add a residual block to the problem
 		// ceres::HuberLoss(0.8) worked for most cases
-		problem.AddResidualBlock(pnpError, new ceres::HuberLoss(0.8), rotAngleAxis, trans);
+		problem.AddResidualBlock(pnpError, new ceres::HuberLoss(0.25), rotAngleAxis, trans);
 	}
 
 

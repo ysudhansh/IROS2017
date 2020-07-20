@@ -51,7 +51,9 @@ end
 %     fprintf(fileID, "%f ", lambdas_collection(i,:));
 %     fprintf(fileID, "\n");
 % end
+
 lambdas = mean(lambdas_collection);
+% lambdas=[0.0208000000000000,0.00970000000000000,0.00720000000000000,0.00570000000000000,0.00470000000000000,0.00330000000000000,0.00210000000000000,0.00160000000000000,0.00100000000000000,0.000900000000000000,0.000800000000000000,0.000800000000000000,0.000700000000000000,0.000600000000000000,0.000500000000000000,0.000500000000000000,0.000400000000000000,0.000400000000000000,0.000400000000000000,0.000300000000000000,0.000300000000000000,0.000300000000000000,0.000300000000000000,0.000300000000000000,0.000200000000000000,0.000200000000000000,0.000200000000000000,0.000200000000000000,0.000200000000000000,0.000200000000000000,0.000200000000000000,0.000100000000000000,0.000100000000000000,0.000100000000000000,0.000100000000000000,0.000100000000000000,0.000100000000000000,0.000100000000000000,0.000100000000000000,0.000100000000000000,0.000100000000000000,0.000100000000000000];
 fprintf(fileID, "%f ", lambdas);
 fprintf(fileID, "\n");
 for i=1:numViews
@@ -72,10 +74,16 @@ for i=1:length(frm)
     visualizeWireframe2D(image, wf_img);
     saveas(img, sprintf("multiViewResult/%d_%d_%d.png", seq(i), frm(i), id(i)));
     close(img);
-    pause(1);
+    pause(0.1);
 end
 
-system("ffmpeg -framerate 5 -start_number 35 -i 'multiViewResult/3_%d_1.png' -c:v libx264 -r 30  -vf 'pad=ceil(iw/2)*2:ceil(ih/2)*2' -pix_fmt yuv420p car1.mp4");
-system("ffmpeg -framerate 5 -start_number 10 -i 'multiViewResult/3_%d_0.png' -c:v libx264 -r 30  -vf 'pad=ceil(iw/2)*2:ceil(ih/2)*2' -pix_fmt yuv420p car0.mp4");
+if seqID == 3 && carID == 1 && end_frm ~= 100 % hardcoding specifically for this case because keypoints are terrible
+    for i=end_frm:1
+        system("rm multiViewResult/3_" + string(i) + "_1.png");
+    end
+end
+
+system("rm multiViewResult/" + string(seqID) + "_" + string(start_frm) + "_" + string(end_frm) + "_" + string(carID) + ".mp4");
+system("ffmpeg -framerate 5 -start_number "+string(start_frm)+" -i 'multiViewResult/"+string(seqID)+"_%d_"+string(carID)+".png' -c:v libx264 -r 30  -vf 'pad=ceil(iw/2)*2:ceil(ih/2)*2' -pix_fmt yuv420p multiViewResult/" + string(seqID) + "_" + string(start_frm) + "_" + string(end_frm) + "_" + string(carID) + ".mp4");
 
 end

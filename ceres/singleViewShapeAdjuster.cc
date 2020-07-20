@@ -141,7 +141,7 @@ int main(int argc, char** argv){
 
 
 		// Add a residual block to the problem
-		problem.AddResidualBlock(lambdaError, new ceres::HuberLoss(0.5), rotAngleAxis, lambdas);
+		problem.AddResidualBlock(lambdaError, new ceres::HuberLoss(2.0), rotAngleAxis, lambdas);
 
 		// Add a regularizer (to prevent lambdas from growing too large)
 		ceres::CostFunction *lambdaRegularizer = new ceres::AutoDiffCostFunction<LambdaRegularizer, 3, 5>(
