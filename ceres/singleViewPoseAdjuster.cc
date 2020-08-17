@@ -96,7 +96,7 @@ int main(int argc, char** argv){
 
 	// Initialize the rotation and translation estimates
 	double rotMat[9] = {1, 0, 0, 0, 1, 0, 0, 0, 1};
-	double trans[3] = {1, 1, 1};
+	double trans[3] = {0.1, 0.1, 0.1};
 	// Convert the rotation estimate to an axis-angle representation
 	double rotAngleAxis[3] = {0.001, 1, 0.001};
 	// ceres::RotationMatrixToAngleAxis(rot, rotAngleAxis);
@@ -129,14 +129,14 @@ int main(int argc, char** argv){
 			new PnPError(X_bar_initial+3*i, observations+2*i, curEigVec, K, observationWeights[i], lambdas));
 		// Add a residual block to the problem
 		// ceres::HuberLoss(0.8) worked for most cases
-		problem.AddResidualBlock(pnpError, new ceres::HuberLoss(0.25), rotAngleAxis, trans);
+		problem.AddResidualBlock(pnpError, new ceres::HuberLoss(15.0), rotAngleAxis, trans);
 	}
 
 
 	// Add a regularizer to the translation term (to prevent a huge drift from the initialization)
 	ceres::CostFunction *translationRegularizer = new ceres::AutoDiffCostFunction<TranslationRegularizer, 3, 3>(
 		new TranslationRegularizer(carCenter));
-	problem.AddResidualBlock(translationRegularizer, new ceres::HuberLoss(0.1), trans);
+	problem.AddResidualBlock(translationRegularizer, new ceres::HuberLoss(0.01), trans);
 
 	// Add a rotation regularizer, to ensure that the rotation is about the Y-axis
 	ceres::CostFunction *rotationRegularizer = new ceres::AutoDiffCostFunction<RotationRegularizer, 3, 3>(
@@ -167,7 +167,8 @@ int main(int argc, char** argv){
 	options.preconditioner_type = ceres::JACOBI;
 	// ITERATIVE_SCHUR + explicit schur complement = disaster
 	// options.use_explicit_schur_complement = true;
-	options.use_inner_iterations = true;
+	// options.use_inner_iterations = true;
+	options.max_num_iterations = 100;
 	options.minimizer_progress_to_stdout = false;
 
 	// // Optionally, specify callbacks to be executed each iter

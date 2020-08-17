@@ -1,4 +1,4 @@
-function [wireframe_collection, def_vector_collection] = approxAlignWireframe(seq, frm, id)
+function [wireframe_collection, def_vector_collection, rotation_collection] = approxAlignWireframe(seq, frm, id)
 
 K = [721.53,0,609.55;0,721.53,172.85;0,0,1];
 [old_wireframe, old_def_vectors] = initialTransformations();
@@ -9,8 +9,10 @@ B = mobili(seq, frm, id);
 T = B(:,4:6)';
 wireframe_collection = [];
 def_vector_collection = [];
+rotation_collection = [];
 for i=1:size(phi,1)
     R_y = roty(rad2deg(phi(i)) + 10 * rand());
+    rotation_collection = [rotation_collection; R_y];
     new_wireframe = R_y * old_wireframe;
     new_wireframe_translated = new_wireframe + T(:,i);
     new_wireframe_temp = K * new_wireframe_translated;

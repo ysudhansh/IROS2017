@@ -63,7 +63,7 @@ int main(int argc, char** argv){
 	double initialReprojError = 0.0, finalReprojError = 0.0;
 
 	// Normal to the XZ plane (ground plane)
-	double xzNormal[3] = {0, 1, 0};
+	double xzNormal[3] = {0, -1, 0};
 
 	// Get the center of the car
 	double *carCenter = myProblem.getCarCenter();
@@ -134,20 +134,20 @@ int main(int argc, char** argv){
 			//new LambdaReprojectionError(X_bar+3*i, observations+2*i, curEigVec, K, observationWeights[i], trans));
 
 
-		ceres::CostFunction *lambdaError = new ceres::AutoDiffCostFunction<LambdaReprojectionError, 2, 3, 5>(
+		ceres::CostFunction *lambdaError = new ceres::AutoDiffCostFunction<LambdaReprojectionError, 2, 3, 42>(
 			new LambdaReprojectionError(X_bar+3*i, observations+2*i, curEigVec, K, observationWeights[i], trans));
 
 
 
 
 		// Add a residual block to the problem
-		problem.AddResidualBlock(lambdaError, new ceres::HuberLoss(2.0), rotAngleAxis, lambdas);
+		problem.AddResidualBlock(lambdaError, new ceres::HuberLoss(0.8), rotAngleAxis, lambdas);
 
 		// Add a regularizer (to prevent lambdas from growing too large)
-		ceres::CostFunction *lambdaRegularizer = new ceres::AutoDiffCostFunction<LambdaRegularizer, 3, 5>(
+		ceres::CostFunction *lambdaRegularizer = new ceres::AutoDiffCostFunction<LambdaRegularizer, 3, 42>(
 			new LambdaRegularizer(curEigVec));
 		// Add a residual block to the problem
-		problem.AddResidualBlock(lambdaRegularizer, new ceres::HuberLoss(0.001), lambdas);
+		problem.AddResidualBlock(lambdaRegularizer, new ceres::HuberLoss(0.1), lambdas);
 
 		// // Create a cost function to regularize 3D keypoint locations (alignment error)
 		// ceres::CostFunction *alignmentError = new ceres::AutoDiffCostFunction<LambdaAlignmentError, 3, 5>(
