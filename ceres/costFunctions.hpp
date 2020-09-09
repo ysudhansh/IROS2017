@@ -454,6 +454,7 @@ struct LambdaReprojectionError{
 			P_[2] +=  T(l[k])*T(v_[i + 2]);
 			++k;
 		}
+
 		// Apply the rotation and translation
 		ceres::AngleAxisRotatePoint(rot_, P_, P_);
 		P_[0] += T(trans_[0]);
@@ -465,13 +466,13 @@ struct LambdaReprojectionError{
 		p_[0] = T(K_[0])*P_[0] + T(K_[1])*P_[1] + T(K_[2])*P_[2];
 		p_[1] = T(K_[3])*P_[0] + T(K_[4])*P_[1] + T(K_[5])*P_[2];
 		p_[2] = T(K_[6])*P_[0] + T(K_[7])*P_[1] + T(K_[8])*P_[2];
-
+		
 		T px_ = p_[0] / p_[2];
 		T py_ = p_[1] / p_[2];
 
 		// Compute the residuals (this one works well)
-		residuals[0] = T(1)*sqrt(T(w_))*(px_ - T(x_[0]));
-		residuals[1] = T(1)*sqrt(T(w_))*(py_ - T(x_[1]));
+		residuals[0] = sqrt(T(w_))*(px_ - T(x_[0]));
+		residuals[1] = sqrt(T(w_))*(py_ - T(x_[1]));
 
 		return true;
 	}
@@ -491,6 +492,7 @@ struct LambdaReprojectionError{
 
 };
 
+
 // Cost function to store (3D) alignment error resulting from the values of lambdas
 // Here, 'X_init' is the actual 3D location we are encouraging the car to lie close to
 struct LambdaAlignmentError{
@@ -505,10 +507,19 @@ struct LambdaAlignmentError{
 
 		// Temporary variable to hold the 3D keypoint
 		T P_[3];
+		P_[0] = T(X_[0]);
+		P_[1] = T(X_[1]);
+		P_[2] = T(X_[2]);
+
+		int k = 0;
 		// Initialize the 3D point
-		P_[0] = T(X_[0]) + T(l[0])*T(v_[0]) + T(l[1])*T(v_[3]) + T(l[2])*T(v_[6]) + T(l[3])*T(v_[9]) + T(l[4])*T(v_[12]);
-		P_[1] = T(X_[1]) + T(l[0])*T(v_[1]) + T(l[1])*T(v_[4]) + T(l[2])*T(v_[7]) + T(l[3])*T(v_[10]) + T(l[4])*T(v_[13]);
-		P_[2] = T(X_[2]) + T(l[0])*T(v_[2]) + T(l[1])*T(v_[5]) + T(l[2])*T(v_[8]) + T(l[3])*T(v_[11]) + T(l[4])*T(v_[14]);
+		for (int i = 0; i < 42*3;i+=3)
+		{
+			P_[0] +=  T(l[k])*T(v_[i]);
+			P_[1] +=  T(l[k])*T(v_[i + 1]);
+			P_[2] +=  T(l[k])*T(v_[i + 2]);
+			++k;
+		}
 
 		residuals[0] = T(sqrt(w_))*(T(P_[0]) - T(X_init_[0]));
 		residuals[1] = T(sqrt(w_))*(T(P_[0]) - T(X_init_[1]));
@@ -544,19 +555,20 @@ struct LambdaRegularizer{
 	template <typename T>
 	bool operator() (const T* l, T* residuals) const{
 
+
 		int k = 0;
 		// Initialize the 3D point
 		residuals[0] = T(0);
 		residuals[1] = T(0);
 		residuals[2] = T(0);
+		
 		for (int i = 0; i < 42*3;i+=3)
 		{
-			residuals[0] +=  10.0*T(l[k])*T(v_[i]);
-			residuals[1] +=  10.0*T(l[k])*T(v_[i + 1]);
-			residuals[2] +=  10.0*T(l[k])*T(v_[i + 2]);
+			residuals[0] +=  T(l[k])*T(v_[i]);
+			residuals[1] +=  T(l[k])*T(v_[i + 1]);
+			residuals[2] +=  T(l[k])*T(v_[i + 2]);
 			++k;
-		}
-
+		}		
 		return true;
 	}
 
@@ -564,7 +576,6 @@ struct LambdaRegularizer{
 	double *v_;
 
 };
-
 
 
 // Cost function to prevent lambdas from deforming the shape strongly
@@ -578,12 +589,10 @@ struct LambdaRegularizerWeighted{
 	template <typename T>
 	bool operator() (const T* l, T* residuals) const{
 
-		residuals[0] = T(sqrt(w_[0]))*l[0];
-		residuals[1] = T(sqrt(w_[1]))*l[1];
-		residuals[2] = T(sqrt(w_[2]))*l[2];
-		residuals[3] = T(sqrt(w_[3]))*l[3];
-		residuals[4] = T(sqrt(w_[4]))*l[4];
-
+		for(int i = 0; i < 42; i++)
+		{
+			residuals[i] = T(sqrt(w_[i]))*l[i];
+		}
 		return true;
 	}
 
@@ -603,9 +612,9 @@ struct TranslationRegularizer{
 	template <typename T>
 	bool operator() (const T* trans, T* residuals) const{
 
-		residuals[0] = T(25)*trans[0];
-		residuals[1] = T(50)*trans[1];
-		residuals[2] = T(100)*trans[2];
+		residuals[0] = T(0.1)*trans[0];
+		residuals[1] = T(0.1)*trans[1];
+		residuals[2] = T(0.1)*trans[2];
 
 		return true;
 	}
@@ -627,7 +636,7 @@ struct RotationRegularizer{
 	bool operator() (const T* rot, T* residuals) const{
 
 		residuals[0] = T(500) * rot[0];
-		residuals[1] = T(15.0) * rot[1];
+		residuals[1] = T(25.0) * rot[1];
 		residuals[2] = T(500) * rot[2];
 
 		return true;
@@ -653,29 +662,19 @@ struct PnPError{
 		P_[1] = T(X_[1]);
 		P_[2] = T(X_[2]);
 
-		// Initialize the 3D point
-		// P_[0] = T(X_[0]) + T(l_[0])*T(v_[0]) + T(l_[1])*T(v_[3]) + T(l_[2])*T(v_[6]) + T(l_[3])*T(v_[9]) + T(l_[4])*T(v_[12]);
-		// P_[1] = T(X_[1]) + T(l_[0])*T(v_[1]) + T(l_[1])*T(v_[4]) + T(l_[2])*T(v_[7]) + T(l_[3])*T(v_[10]) + T(l_[4])*T(v_[13]);
-		// P_[2] = T(X_[2]) + T(l_[0])*T(v_[2]) + T(l_[1])*T(v_[5]) + T(l_[2])*T(v_[8]) + T(l_[3])*T(v_[11]) + T(l_[4])*T(v_[14]);
-
 		int k = 0;
 		// Initialize the 3D point
-		for (int i = 0; i < 42*3;i+=3)
+		for (int i = 0; i < 3*42;i+=3)
 		{
 			P_[0] +=  T(l_[k])*T(v_[i]);
 			P_[1] +=  T(l_[k])*T(v_[i + 1]);
 			P_[2] +=  T(l_[k])*T(v_[i + 2]);
 			++k;
-			// std::cout<<k<<"\n";
 		}
-
 
 		// Rotate the point (and store the result in the same variable)
 		// Order of arguments passed: (axis-angle rotation vector (size 3), point (size 3), array where result is to be stored (size 3))
-		T Pt_[3];
-		ceres::AngleAxisRotatePoint(rot, P_, Pt_);
-		*P_ = *Pt_;
-		
+		ceres::AngleAxisRotatePoint(rot, P_, P_);
 		// Add the translation
 		P_[0] = T(P_[0]) + trans[0];
 		P_[1] = T(P_[1]) + trans[1];
@@ -723,6 +722,206 @@ struct PnPError{
 	double *l_;
 
 };
+// Cost function to control the amount of rotation from previous frame.
+struct RotationChange{
+
+	// Constructor
+	RotationChange(double W) : W_(W) {}
+
+	// Operator method. Evaluates the cost function and computes the Jacobians.
+	template <typename T>
+	bool operator() (const T* rot1, const T* rot2, T* residuals) const {
+
+		residuals[0] = (T(W_))*(rot1[0] - rot2[0]);
+		residuals[1] = (T(W_))*(rot1[1] - rot2[1]);
+		residuals[2] = (T(W_))*(rot1[2] - rot2[2]);
+
+		return true;
+
+	}
+
+	// Weight of the residual term
+	double W_;
+
+
+
+};
+
+// Cost function to control the amount of translation from previous frame.
+struct TranslationChange{
+
+	// Constructor
+	TranslationChange(double W) : W_(W) {}
+
+	// Operator method. Evaluates the cost function and computes the Jacobians.
+	template <typename T>
+	bool operator() (const T* trans1,const T* trans2, T* residuals) const{
+
+		residuals[0] = T(W_)*(trans1[0] - trans2[0]);
+		residuals[1] = T(W_)*(trans1[1] - trans2[1]);
+		residuals[2] = T(W_)*(trans1[2] - trans2[2]);
+
+		return true;
+	}
+
+	// Weight of the residual term
+	double W_;
+
+
+};
+
+// Regularizer for the height of the car
+struct HeightRegularizer{
+
+	// Constructor
+	HeightRegularizer(double *X_bar, double *V, double heightPrior) : X_bar_(X_bar), V_(V), heightPrior_(heightPrior) {}
+
+	// Operator method. Evaluates the cost function and computes the Jacobians.
+	template <typename T>
+	bool operator() (const T* rot, const T* trans, const T* lambdas, T* residuals) const {
+
+		// Height is the distance between L_B_WheelCenter (3rd KP) and L_B_RoofTop (13th KP)
+		T lbWheel_[3];
+		T lbRoof_[3];
+
+		// Initialize L_B_WheelCenter
+		lbWheel_[0] = T(X_bar_[3*2 + 0]) + lambdas[0]*T(V_[42*0 + 3*2 + 0]) + lambdas[1]*T(V_[42*1 + 3*2 + 0]) + lambdas[2]*T(V_[42*2 + 3*2 + 0]) + lambdas[3]*T(V_[42*3 + 3*2 + 0]) + lambdas[4]*T(V_[42*4 + 3*2 +0]);
+		lbWheel_[1] = T(X_bar_[3*2 + 1]) + lambdas[0]*T(V_[42*0 + 3*2 + 1]) + lambdas[1]*T(V_[42*1 + 3*2 + 1]) + lambdas[2]*T(V_[42*2 + 3*2 + 1]) + lambdas[3]*T(V_[42*3 + 3*2 + 1]) + lambdas[4]*T(V_[42*4 + 3*2 +1]);
+		lbWheel_[2] = T(X_bar_[3*2 + 2]) + lambdas[0]*T(V_[42*0 + 3*2 + 2]) + lambdas[1]*T(V_[42*1 + 3*2 + 2]) + lambdas[2]*T(V_[42*2 + 3*2 + 2]) + lambdas[3]*T(V_[42*3 + 3*2 + 2]) + lambdas[4]*T(V_[42*4 + 3*2 +2]);
+		ceres::AngleAxisRotatePoint(rot, lbWheel_, lbWheel_);
+		lbWheel_[0] += trans[0];
+		lbWheel_[1] += trans[1];
+		lbWheel_[2] += trans[2];
+
+		// Initialize L_B_RoofTop
+		lbRoof_[0] = T(X_bar_[3*12 + 0]) + lambdas[0]*T(V_[42*0 + 3*12 + 0]) + lambdas[1]*T(V_[42*1 + 3*12 + 0]) + lambdas[2]*T(V_[42*2 + 3*12 + 0]) + lambdas[3]*T(V_[42*3 + 3*12 + 0]) + lambdas[4]*T(V_[42*4 + 3*12 +0]);
+		lbRoof_[1] = T(X_bar_[3*12 + 1]) + lambdas[0]*T(V_[42*0 + 3*12 + 1]) + lambdas[1]*T(V_[42*1 + 3*12 + 1]) + lambdas[2]*T(V_[42*2 + 3*12 + 1]) + lambdas[3]*T(V_[42*3 + 3*12 + 1]) + lambdas[4]*T(V_[42*4 + 3*12 +1]);
+		lbRoof_[2] = T(X_bar_[3*12 + 2]) + lambdas[0]*T(V_[42*0 + 3*12 + 2]) + lambdas[1]*T(V_[42*1 + 3*12 + 2]) + lambdas[2]*T(V_[42*2 + 3*12 + 2]) + lambdas[3]*T(V_[42*3 + 3*12 + 2]) + lambdas[4]*T(V_[42*4 + 3*12 +2]);
+		ceres::AngleAxisRotatePoint(rot, lbRoof_, lbRoof_);
+		lbRoof_[0] += trans[0];
+		lbRoof_[1] += trans[1];
+		lbRoof_[2] += trans[2];
+
+		// Compute height
+		residuals[0] = T(10)*(sqrt((lbWheel_[0]-lbRoof_[0])*(lbWheel_[0]-lbRoof_[0]) + (lbWheel_[1]-lbRoof_[1])*(lbWheel_[1]-lbRoof_[1]) + (lbWheel_[2]-lbRoof_[2])*(lbWheel_[2]-lbRoof_[2])) - T(heightPrior_));
+
+
+		return true;
+
+	}
+
+	// 3D Wireframe
+	double *X_bar_;
+	// Deformation basis
+	double *V_;
+	// Prior height
+	double heightPrior_;
+
+};
+
+
+// Regularizer for the width of the car
+struct WidthRegularizer{
+
+	// Constructor
+	WidthRegularizer(double *X_bar, double *V, double widthPrior) : X_bar_(X_bar), V_(V), widthPrior_(widthPrior) {}
+
+	// Operator method. Evaluates the cost function and computes the Jacobians.
+	template <typename T>
+	bool operator() (const T* rot, const T* trans, const T* lambdas, T* residuals) const {
+		
+		// Width is the distance between L_HeadLight (5th KP) and R_HeadLight (6th KP)
+		T lHead_[3];
+		T rHead_[3];
+
+		// Initialize L_B_WheelCenter
+		lHead_[0] = T(X_bar_[3*4 + 0]) + lambdas[0]*T(V_[42*0 + 3*4 + 0]) + lambdas[1]*T(V_[42*1 + 3*4 + 0]) + lambdas[2]*T(V_[42*2 + 3*4 + 0]) + lambdas[3]*T(V_[42*3 + 3*4 + 0]) + lambdas[4]*T(V_[42*4 + 3*4 +0]);
+		lHead_[1] = T(X_bar_[3*4 + 1]) + lambdas[0]*T(V_[42*0 + 3*4 + 1]) + lambdas[1]*T(V_[42*1 + 3*4 + 1]) + lambdas[2]*T(V_[42*2 + 3*4 + 1]) + lambdas[3]*T(V_[42*3 + 3*4 + 1]) + lambdas[4]*T(V_[42*4 + 3*4 +1]);
+		lHead_[2] = T(X_bar_[3*4 + 2]) + lambdas[0]*T(V_[42*0 + 3*4 + 2]) + lambdas[1]*T(V_[42*1 + 3*4 + 2]) + lambdas[2]*T(V_[42*2 + 3*4 + 2]) + lambdas[3]*T(V_[42*3 + 3*4 + 2]) + lambdas[4]*T(V_[42*4 + 3*4 +2]);
+		ceres::AngleAxisRotatePoint(rot, lHead_, lHead_);
+		lHead_[0] += trans[0];
+		lHead_[1] += trans[1];
+		lHead_[2] += trans[2];
+
+		// Initialize L_B_RoofTop
+		rHead_[0] = T(X_bar_[3*5 + 0]) + lambdas[0]*T(V_[42*0 + 3*5 + 0]) + lambdas[1]*T(V_[42*1 + 3*5 + 0]) + lambdas[2]*T(V_[42*2 + 3*5 + 0]) + lambdas[3]*T(V_[42*3 + 3*5 + 0]) + lambdas[4]*T(V_[42*4 + 3*5 +0]);
+		rHead_[1] = T(X_bar_[3*5 + 1]) + lambdas[0]*T(V_[42*0 + 3*5 + 1]) + lambdas[1]*T(V_[42*1 + 3*5 + 1]) + lambdas[2]*T(V_[42*2 + 3*5 + 1]) + lambdas[3]*T(V_[42*3 + 3*5 + 1]) + lambdas[4]*T(V_[42*4 + 3*5 +1]);
+		rHead_[2] = T(X_bar_[3*5 + 2]) + lambdas[0]*T(V_[42*0 + 3*5 + 2]) + lambdas[1]*T(V_[42*1 + 3*5 + 2]) + lambdas[2]*T(V_[42*2 + 3*5 + 2]) + lambdas[3]*T(V_[42*3 + 3*5 + 2]) + lambdas[4]*T(V_[42*4 + 3*5 +2]);
+		ceres::AngleAxisRotatePoint(rot, rHead_, rHead_);
+		rHead_[0] += trans[0];
+		rHead_[1] += trans[1];
+		rHead_[2] += trans[2];
+
+		// Compute height
+		residuals[0] = T(10)*(sqrt((lHead_[0]-rHead_[0])*(lHead_[0]-rHead_[0]) + (lHead_[1]-rHead_[1])*(lHead_[1]-rHead_[1]) + (lHead_[2]-rHead_[2])*(lHead_[2]-rHead_[2])) - T(widthPrior_));
+
+
+		return true;
+
+	}
+
+	// 3D Wireframe
+	double *X_bar_;
+	// Deformation basis
+	double *V_;
+	// Prior width
+	double widthPrior_;
+
+};
+
+
+// Regularizer for the length of the car
+struct LengthRegularizer{
+
+	// Constructor
+	LengthRegularizer(double *X_bar, double *V, double lengthPrior) : X_bar_(X_bar), V_(V), lengthPrior_(lengthPrior) {}
+
+	// Operator method. Evaluates the cost function and computes the Jacobians.
+	template <typename T>
+	bool operator() (const T* rot, const T* trans, const T* lambdas, T* residuals) const {
+
+		// Length is the distance between L_HeadLight (5th KP) and L_TailLight (7th KP)
+		T lHead_[3];
+		T lTail_[3];
+
+		// Initialize L_B_WheelCenter
+		lHead_[0] = T(X_bar_[3*4 + 0]) + lambdas[0]*T(V_[42*0 + 3*4 + 0]) + lambdas[1]*T(V_[42*1 + 3*4 + 0]) + lambdas[2]*T(V_[42*2 + 3*4 + 0]) + lambdas[3]*T(V_[42*3 + 3*4 + 0]) + lambdas[4]*T(V_[42*4 + 3*4 +0]);
+		lHead_[1] = T(X_bar_[3*4 + 1]) + lambdas[0]*T(V_[42*0 + 3*4 + 1]) + lambdas[1]*T(V_[42*1 + 3*4 + 1]) + lambdas[2]*T(V_[42*2 + 3*4 + 1]) + lambdas[3]*T(V_[42*3 + 3*4 + 1]) + lambdas[4]*T(V_[42*4 + 3*4 +1]);
+		lHead_[2] = T(X_bar_[3*4 + 2]) + lambdas[0]*T(V_[42*0 + 3*4 + 2]) + lambdas[1]*T(V_[42*1 + 3*4 + 2]) + lambdas[2]*T(V_[42*2 + 3*4 + 2]) + lambdas[3]*T(V_[42*3 + 3*4 + 2]) + lambdas[4]*T(V_[42*4 + 3*4 +2]);
+		ceres::AngleAxisRotatePoint(rot, lHead_, lHead_);
+		lHead_[0] += trans[0];
+		lHead_[1] += trans[1];
+		lHead_[2] += trans[2];
+
+		// Initialize L_B_RoofTop
+		lTail_[0] = T(X_bar_[3*6 + 0]) + lambdas[0]*T(V_[42*0 + 3*6 + 0]) + lambdas[1]*T(V_[42*1 + 3*6 + 0]) + lambdas[2]*T(V_[42*2 + 3*6 + 0]) + lambdas[3]*T(V_[42*3 + 3*6 + 0]) + lambdas[4]*T(V_[42*4 + 3*6 +0]);
+		lTail_[1] = T(X_bar_[3*6 + 1]) + lambdas[0]*T(V_[42*0 + 3*6 + 1]) + lambdas[1]*T(V_[42*1 + 3*6 + 1]) + lambdas[2]*T(V_[42*2 + 3*6 + 1]) + lambdas[3]*T(V_[42*3 + 3*6 + 1]) + lambdas[4]*T(V_[42*4 + 3*6 +1]);
+		lTail_[2] = T(X_bar_[3*6 + 2]) + lambdas[0]*T(V_[42*0 + 3*6 + 2]) + lambdas[1]*T(V_[42*1 + 3*6 + 2]) + lambdas[2]*T(V_[42*2 + 3*6 + 2]) + lambdas[3]*T(V_[42*3 + 3*6 + 2]) + lambdas[4]*T(V_[42*4 + 3*6 +2]);
+		ceres::AngleAxisRotatePoint(rot, lTail_, lTail_);
+		lTail_[0] += trans[0];
+		lTail_[1] += trans[1];
+		lTail_[2] += trans[2];
+
+		// Compute height
+		residuals[0] = T(2)*(sqrt((lHead_[0]-lTail_[0])*(lHead_[0]-lTail_[0]) + (lHead_[1]-lTail_[1])*(lHead_[1]-lTail_[1]) + (lHead_[2]-lTail_[2])*(lHead_[2]-lTail_[2])) - T(lengthPrior_));
+
+
+		return true;
+
+	}
+
+	// 3D Wireframe
+	double *X_bar_;
+	// Deformation basis
+	double *V_;
+	// Prior length
+	double lengthPrior_;
+
+};
+
+
+
+
 
 
 // Storing old (commented) versions of error terms here (for reference)

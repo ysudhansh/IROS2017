@@ -30,6 +30,7 @@ for i=1:size(frm,2)
     fprintf(fileID, "%f %f\n", keypoints_collection(2*i-1:2*i,:));
     fprintf(fileID, "%f\n", observation_wts(:,i));  
     fprintf(fileID, "%f %f %f\n", wireframe(3*i-2:3*i,:));
+    dv = def_vectors(42*i-41:42*i,:);
     for j=1:42
         for k=1:3:108
             fprintf(fileID, "%f %f %f ", def_vectors(42*(i-1) + j, k : k+2)); 
@@ -59,6 +60,7 @@ for i=1:size(frm,2)
     new_rot = R * init_rot;
     fprintf(f, "%f %f %f %f %f %f %f %f %f\n", reshape(new_rot', [1, 9]));
 %     fclose(f);
+    def_vectors_collection = [def_vectors_collection; dv];
 end
 fclose(f);
 end

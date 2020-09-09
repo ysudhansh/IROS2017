@@ -1,5 +1,10 @@
-function multiViewAdjuster(seqID, start_frm, end_frm, carID)
-
+% [~, def_vectors, rotation_collection, translation_collection, lambdas_collection] = shapeOptimizer(3 * ones(1,132-41+1), 41:132, ones(1, 132-41+1));
+% last_dv = def_vectors(42*29-41 : 42*29, :);
+% def_vectors = [def_vectors; repmat(last_dv, 132 - 70 + 1, 1)];
+seqID = 3;
+start_frm = 41;
+end_frm = 132;
+carID = 1;
 numFrames = end_frm - start_frm + 1;
 seq = seqID .* ones(1, numFrames);
 frm = start_frm:1:end_frm;
@@ -20,6 +25,9 @@ B = mobili(seq, frm, id);
 carCenters = B(:,4:6);
 [wireframe, ~] = approxAlignWireframe(seq, frm, id);
 [~, def_vectors, rotation_collection, translation_collection, lambdas_collection] = shapeOptimizer(seq, frm, id);
+last_dv = def_vectors(42*29-41 : 42*29, :);
+def_vectors = [def_vectors; repmat(last_dv, 132 - 70 + 1, 1)];
+lambdas_collection = lambdas_collection(1:29,:);
 observation_wts = keypointWeightsShape(seq, frm, id);
 [~, keypoints_collection] = keypointLocalizations(seq, frm, id);
 
@@ -87,8 +95,8 @@ fclose(f);
 %     end
 % end
 
-system("rm multiViewResult/" + string(seqID) + "_" + string(start_frm) + "_" + string(end_frm) + "_" + string(carID) + ".mp4");
-system("ffmpeg -framerate 5 -start_number "+string(start_frm)+" -i 'multiViewResult/"+string(seqID)+"_%d_"+string(carID)+".png' -c:v libx264 -r 30  -vf 'pad=ceil(iw/2)*2:ceil(ih/2)*2' -pix_fmt yuv420p multiViewResult/" + string(seqID) + "_" + string(start_frm) + "_" + string(end_frm) + "_" + string(carID) + ".mp4");
+system("rm multiViewResult/seq3_" + string(seqID) + "_" + string(start_frm) + "_" + string(end_frm) + "_" + string(carID) + ".mp4");
+system("ffmpeg -framerate 5 -start_number "+string(start_frm)+" -i 'multiViewResult/"+string(seqID)+"_%d_"+string(carID)+".png' -c:v libx264 -r 30  -vf 'pad=ceil(iw/2)*2:ceil(ih/2)*2' -pix_fmt yuv420p multiViewResult/seq3_" + string(seqID) + "_" + string(start_frm) + "_" + string(end_frm) + "_" + string(carID) + ".mp4");
 final_rot = importdata("rotLog.txt");
 final_pose = importdata("transLog.txt");
 f = fopen(string(seqID) + "_" + string(start_frm) + "_" + string(end_frm) + "_" + string(carID) + ".txt","w");
@@ -96,4 +104,3 @@ for i=1:size(final_rot, 1)
     fprintf(f, "%f %f %f %f %f %f %f %f %f %f %f %f\n", final_rot(i,:), final_pose(i,:));
 end
 fclose(f);
-end

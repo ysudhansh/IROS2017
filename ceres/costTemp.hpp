@@ -441,16 +441,21 @@ struct LambdaReprojectionError{
 
 		// 3D wireframe (before applying rotation and translation)
 		T P_[3];
+		P_[0] = T(X_[0]);
+		P_[1] = T(X_[1]);
+		P_[2] = T(X_[2]);
+
+		int k = 0;
 		// Initialize the 3D point
-		P_[0] = T(X_[0]) + T(l[0])*T(v_[0]) + T(l[1])*T(v_[3]) + T(l[2])*T(v_[6]) + T(l[3])*T(v_[9]) + T(l[4])*T(v_[12]);
-		P_[1] = T(X_[1]) + T(l[0])*T(v_[1]) + T(l[1])*T(v_[4]) + T(l[2])*T(v_[7]) + T(l[3])*T(v_[10]) + T(l[4])*T(v_[13]);
-		P_[2] = T(X_[2]) + T(l[0])*T(v_[2]) + T(l[1])*T(v_[5]) + T(l[2])*T(v_[8]) + T(l[3])*T(v_[11]) + T(l[4])*T(v_[14]);
-
+		for (int i = 0; i < 42*3;i+=3)
+		{
+			P_[0] +=  T(l[k])*T(v_[i]);
+			P_[1] +=  T(l[k])*T(v_[i + 1]);
+			P_[2] +=  T(l[k])*T(v_[i + 2]);
+			++k;
+		}
 		// Apply the rotation and translation
-		// T Pt_[3];
 		ceres::AngleAxisRotatePoint(rot_, P_, P_);
-		// *P_ = *Pt_;
-
 		P_[0] += T(trans_[0]);
 		P_[1] += T(trans_[1]);
 		P_[2] += T(trans_[2]);
@@ -460,13 +465,13 @@ struct LambdaReprojectionError{
 		p_[0] = T(K_[0])*P_[0] + T(K_[1])*P_[1] + T(K_[2])*P_[2];
 		p_[1] = T(K_[3])*P_[0] + T(K_[4])*P_[1] + T(K_[5])*P_[2];
 		p_[2] = T(K_[6])*P_[0] + T(K_[7])*P_[1] + T(K_[8])*P_[2];
-		
+
 		T px_ = p_[0] / p_[2];
 		T py_ = p_[1] / p_[2];
 
 		// Compute the residuals (this one works well)
-		residuals[0] = sqrt(T(w_))*(px_ - T(x_[0]));
-		residuals[1] = sqrt(T(w_))*(py_ - T(x_[1]));
+		residuals[0] = T(1)*sqrt(T(w_))*(px_ - T(x_[0]));
+		residuals[1] = T(1)*sqrt(T(w_))*(py_ - T(x_[1]));
 
 		return true;
 	}
@@ -485,7 +490,6 @@ struct LambdaReprojectionError{
 	double *trans_;
 
 };
-
 
 // Cost function to store (3D) alignment error resulting from the values of lambdas
 // Here, 'X_init' is the actual 3D location we are encouraging the car to lie close to
@@ -540,9 +544,18 @@ struct LambdaRegularizer{
 	template <typename T>
 	bool operator() (const T* l, T* residuals) const{
 
-		residuals[0] = ( l[0]*T(v_[0]) + l[1]*T(v_[3]) + l[2]*T(v_[6]) + l[3]*T(v_[9]) + l[4]*T(v_[12]) );
-		residuals[1] = ( l[0]*T(v_[1]) + l[1]*T(v_[4]) + l[2]*T(v_[7]) + l[3]*T(v_[10]) + l[4]*T(v_[13]) );
-		residuals[2] = ( l[0]*T(v_[2]) + l[1]*T(v_[5]) + l[2]*T(v_[8]) + l[3]*T(v_[11]) + l[4]*T(v_[14]) );
+		int k = 0;
+		// Initialize the 3D point
+		residuals[0] = T(0);
+		residuals[1] = T(0);
+		residuals[2] = T(0);
+		for (int i = 0; i < 42*3;i+=3)
+		{
+			residuals[0] +=  10.0*T(l[k])*T(v_[i]);
+			residuals[1] +=  10.0*T(l[k])*T(v_[i + 1]);
+			residuals[2] +=  10.0*T(l[k])*T(v_[i + 2]);
+			++k;
+		}
 
 		return true;
 	}
@@ -551,6 +564,7 @@ struct LambdaRegularizer{
 	double *v_;
 
 };
+
 
 
 // Cost function to prevent lambdas from deforming the shape strongly
@@ -589,9 +603,9 @@ struct TranslationRegularizer{
 	template <typename T>
 	bool operator() (const T* trans, T* residuals) const{
 
-		residuals[0] = T(0.1)*trans[0];
-		residuals[1] = T(0.1)*trans[1];
-		residuals[2] = T(0.1)*trans[2];
+		residuals[0] = T(25)*trans[0];
+		residuals[1] = T(50)*trans[1];
+		residuals[2] = T(150)*trans[2];
 
 		return true;
 	}
@@ -612,9 +626,9 @@ struct RotationRegularizer{
 	template <typename T>
 	bool operator() (const T* rot, T* residuals) const{
 
-		residuals[0] = T(500)*rot[0];
-		residuals[1] = T(0.0);
-		residuals[2] = T(500)*rot[2];
+		residuals[0] = T(500) * rot[0];
+		residuals[1] = T(50.0) * rot[1];
+		residuals[2] = T(500) * rot[2];
 
 		return true;
 	}
@@ -635,10 +649,26 @@ struct PnPError{
 
 		// Temporary variable to hold the 3D keypoint
 		T P_[3];
+		P_[0] = T(X_[0]);
+		P_[1] = T(X_[1]);
+		P_[2] = T(X_[2]);
+
 		// Initialize the 3D point
-		P_[0] = T(X_[0]) + T(l_[0])*T(v_[0]) + T(l_[1])*T(v_[3]) + T(l_[2])*T(v_[6]) + T(l_[3])*T(v_[9]) + T(l_[4])*T(v_[12]);
-		P_[1] = T(X_[1]) + T(l_[0])*T(v_[1]) + T(l_[1])*T(v_[4]) + T(l_[2])*T(v_[7]) + T(l_[3])*T(v_[10]) + T(l_[4])*T(v_[13]);
-		P_[2] = T(X_[2]) + T(l_[0])*T(v_[2]) + T(l_[1])*T(v_[5]) + T(l_[2])*T(v_[8]) + T(l_[3])*T(v_[11]) + T(l_[4])*T(v_[14]);
+		// P_[0] = T(X_[0]) + T(l_[0])*T(v_[0]) + T(l_[1])*T(v_[3]) + T(l_[2])*T(v_[6]) + T(l_[3])*T(v_[9]) + T(l_[4])*T(v_[12]);
+		// P_[1] = T(X_[1]) + T(l_[0])*T(v_[1]) + T(l_[1])*T(v_[4]) + T(l_[2])*T(v_[7]) + T(l_[3])*T(v_[10]) + T(l_[4])*T(v_[13]);
+		// P_[2] = T(X_[2]) + T(l_[0])*T(v_[2]) + T(l_[1])*T(v_[5]) + T(l_[2])*T(v_[8]) + T(l_[3])*T(v_[11]) + T(l_[4])*T(v_[14]);
+
+		int k = 0;
+		// Initialize the 3D point
+		for (int i = 0; i < 42*3;i+=3)
+		{
+			P_[0] +=  T(l_[k])*T(v_[i]);
+			P_[1] +=  T(l_[k])*T(v_[i + 1]);
+			P_[2] +=  T(l_[k])*T(v_[i + 2]);
+			++k;
+			// std::cout<<k<<"\n";
+		}
+
 
 		// Rotate the point (and store the result in the same variable)
 		// Order of arguments passed: (axis-angle rotation vector (size 3), point (size 3), array where result is to be stored (size 3))

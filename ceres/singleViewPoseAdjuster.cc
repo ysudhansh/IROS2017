@@ -98,7 +98,7 @@ int main(int argc, char** argv){
 	double rotMat[9] = {1, 0, 0, 0, 1, 0, 0, 0, 1};
 	double trans[3] = {0.1, 0.1, 0.1};
 	// Convert the rotation estimate to an axis-angle representation
-	double rotAngleAxis[3] = {0.001, 1, 0.001};
+	double rotAngleAxis[3] = {0.001, 1, 0.001}; // will comment this out and un-comment the next line; do it
 	// ceres::RotationMatrixToAngleAxis(rot, rotAngleAxis);
 	// std::cout << "rotAngleAxis: " << rotAngleAxis[0] << " " << rotAngleAxis[1] << " " << rotAngleAxis[2] << std::endl;
 
@@ -129,7 +129,7 @@ int main(int argc, char** argv){
 			new PnPError(X_bar_initial+3*i, observations+2*i, curEigVec, K, observationWeights[i], lambdas));
 		// Add a residual block to the problem
 		// ceres::HuberLoss(0.8) worked for most cases
-		problem.AddResidualBlock(pnpError, new ceres::HuberLoss(15.0), rotAngleAxis, trans);
+		problem.AddResidualBlock(pnpError, new ceres::HuberLoss(15), rotAngleAxis, trans);
 	}
 
 

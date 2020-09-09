@@ -1,4 +1,4 @@
-function multiViewAdjuster(seqID, start_frm, end_frm, carID)
+function altMultiView(seqID, start_frm, end_frm, carID)
 
 numFrames = end_frm - start_frm + 1;
 seq = seqID .* ones(1, numFrames);
@@ -19,8 +19,8 @@ numViews = length(frm);
 B = mobili(seq, frm, id);
 carCenters = B(:,4:6);
 [wireframe, ~] = approxAlignWireframe(seq, frm, id);
-[~, def_vectors, rotation_collection, translation_collection, lambdas_collection] = shapeOptimizer(seq, frm, id);
-observation_wts = keypointWeightsShape(seq, frm, id);
+[~, def_vectors, rotation_collection, translation_collection] = poseOptimizer(seq, frm, id);
+observation_wts = keypointWeights(seq, frm, id);
 [~, keypoints_collection] = keypointLocalizations(seq, frm, id);
 
 fileID = fopen("ceres/ceres_input_multiViewAdjuster.txt","w");
@@ -43,13 +43,14 @@ for i=1:numViews
     for j=1:42
         for k=1:3:108
             fprintf(fileID, "%f %f %f ", def_vectors(42*(i-1) + j, k : k+2)); 
+%             fprintf(fileID, "%f %f %f ", [1, 1, 1]);
         end
         fprintf(fileID, "\n");
     end
 end
 
-lambdas = mean(lambdas_collection);
-% lambdas=[0.0208000000000000,0.00970000000000000,0.00720000000000000,0.00570000000000000,0.00470000000000000,0.00330000000000000,0.00210000000000000,0.00160000000000000,0.00100000000000000,0.000900000000000000,0.000800000000000000,0.000800000000000000,0.000700000000000000,0.000600000000000000,0.000500000000000000,0.000500000000000000,0.000400000000000000,0.000400000000000000,0.000400000000000000,0.000300000000000000,0.000300000000000000,0.000300000000000000,0.000300000000000000,0.000300000000000000,0.000200000000000000,0.000200000000000000,0.000200000000000000,0.000200000000000000,0.000200000000000000,0.000200000000000000,0.000200000000000000,0.000100000000000000,0.000100000000000000,0.000100000000000000,0.000100000000000000,0.000100000000000000,0.000100000000000000,0.000100000000000000,0.000100000000000000,0.000100000000000000,0.000100000000000000,0.000100000000000000];
+% lambdas = mean(lambdas_collection);
+lambdas=[0.0208000000000000,0.00970000000000000,0.00720000000000000,0.00570000000000000,0.00470000000000000,0.00330000000000000,0.00210000000000000,0.00160000000000000,0.00100000000000000,0.000900000000000000,0.000800000000000000,0.000800000000000000,0.000700000000000000,0.000600000000000000,0.000500000000000000,0.000500000000000000,0.000400000000000000,0.000400000000000000,0.000400000000000000,0.000300000000000000,0.000300000000000000,0.000300000000000000,0.000300000000000000,0.000300000000000000,0.000200000000000000,0.000200000000000000,0.000200000000000000,0.000200000000000000,0.000200000000000000,0.000200000000000000,0.000200000000000000,0.000100000000000000,0.000100000000000000,0.000100000000000000,0.000100000000000000,0.000100000000000000,0.000100000000000000,0.000100000000000000,0.000100000000000000,0.000100000000000000,0.000100000000000000,0.000100000000000000];
 fprintf(fileID, "%f ", lambdas);
 fprintf(fileID, "\n");
 for i=1:numViews
@@ -87,8 +88,8 @@ fclose(f);
 %     end
 % end
 
-system("rm multiViewResult/" + string(seqID) + "_" + string(start_frm) + "_" + string(end_frm) + "_" + string(carID) + ".mp4");
-system("ffmpeg -framerate 5 -start_number "+string(start_frm)+" -i 'multiViewResult/"+string(seqID)+"_%d_"+string(carID)+".png' -c:v libx264 -r 30  -vf 'pad=ceil(iw/2)*2:ceil(ih/2)*2' -pix_fmt yuv420p multiViewResult/" + string(seqID) + "_" + string(start_frm) + "_" + string(end_frm) + "_" + string(carID) + ".mp4");
+system("rm multiViewResult/altMultiView_" + string(seqID) + "_" + string(start_frm) + "_" + string(end_frm) + "_" + string(carID) + ".mp4");
+system("ffmpeg -framerate 5 -start_number "+string(start_frm)+" -i 'multiViewResult/"+string(seqID)+"_%d_"+string(carID)+".png' -c:v libx264 -r 30  -vf 'pad=ceil(iw/2)*2:ceil(ih/2)*2' -pix_fmt yuv420p multiViewResult/altMultiView_" + string(seqID) + "_" + string(start_frm) + "_" + string(end_frm) + "_" + string(carID) + ".mp4");
 final_rot = importdata("rotLog.txt");
 final_pose = importdata("transLog.txt");
 f = fopen(string(seqID) + "_" + string(start_frm) + "_" + string(end_frm) + "_" + string(carID) + ".txt","w");
