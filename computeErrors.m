@@ -26,6 +26,6 @@ for i=1:size(opt_ry,1)
     angle_errors = [angle_errors; error];
 end
 f = fopen("errors.txt","a");
-fprintf(f, "%f %f\n", mean(sqrt(sum((ground_truth - opt_pose) .^ 2,2))), mean(angle_errors));
+fprintf(f, "%f %f\n", sqrt(mean(sum((ground_truth - opt_pose) .^ 2,2))), mean(angle_errors));
 fclose(f);
 end
